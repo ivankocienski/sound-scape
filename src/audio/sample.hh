@@ -13,14 +13,19 @@ public:
   } sample_info_t, *p_sample_info_t;
 
   Sample();
+  Sample(float*, int, int);
 
   bool load(const char *);
 
   sample_info_t sample_info() const;
+  std::list<Sample> segment(int);
+
+  void soften(int);
 
 private:
 
   std::vector<float> m_samples;
+  int m_sample_rate;
 };
 
 }

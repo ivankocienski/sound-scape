@@ -7,6 +7,15 @@ namespace audio {
 using namespace std;
 
 Sample::Sample() { 
+  m_sample_rate = 0;
+}
+
+Sample::Sample(float *src_ptr, int src_len, int sample_rate) {
+  m_sample_rate = sample_rate;
+
+  m_samples.resize(src_len);
+
+  memcpy(m_samples.data(), src_ptr, src_len * sizeof(float));
 }
 
 bool Sample::load(const char *path) {
@@ -29,7 +38,10 @@ bool Sample::load(const char *path) {
     return false;
   }
 
-  cout << "frames: " << sf_info.frames << endl; 
+  cout << "frames      : " << sf_info.frames << endl; 
+  cout << "sample-rate : " << sf_info.samplerate << endl;
+
+  m_sample_rate = sf_info.samplerate;
 
   size_t buffer_size = sf_info.frames;
   m_samples.resize(buffer_size);
@@ -58,6 +70,48 @@ Sample::sample_info_t Sample::sample_info() const {
   si.data_length = m_samples.size();
 
   return si;
+}
+
+list<Sample> Sample::segment(int segment_len_ms) {
+
+  list<Sample> segments;
+  int segment_len = (m_sample_rate / 1000.0) * segment_len_ms;
+
+  float *buffer_ptr = m_samples.data();
+  int buffer_count = m_samples.size();
+
+  while(buffer_count >= segment_len) {
+
+    segments.push_back(Sample(buffer_ptr, segment_len, m_sample_rate));
+
+    buffer_ptr   += segment_len;
+    buffer_count -= segment_len;
+  } 
+
+  return segments;
+}
+
+void Sample::soften(int margin_len_ms) {
+  
+  int margin_len_samples = (m_sample_rate / 1000.0) * segment_len_ms;
+
+  if(margin_len_samples > m_samples.size() / 2)
+    return;
+
+  float amp = 0;
+  float step = 1.0 / margin_len_samples;
+  int front = 0;
+  int back = m_samples.size() - 1;
+
+  while(margin_len_samples) {
+    m_samples[front] *= amp;
+    m_samples[back]  *= amp;
+
+    amp += step;
+    front++;
+    back--;
+    margin_len_samples--;
+  }
 }
 
 } // namespace audio

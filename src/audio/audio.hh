@@ -1,7 +1,7 @@
-
 #pragma once
 
-#include "audio-exception.hh"
-#include "audio-pattern.hh"
-#include "audio-service.hh"
+//#include "common.hh"
 
+#include "exception.hh"
+#include "sample.hh"
+#include "service.hh"

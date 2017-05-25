@@ -4,59 +4,29 @@
 #include "audio/audio.hh"
 
 using namespace std; 
+using namespace audio;
 
 int main( int arch, char** argv ) {
 
   try {
 
-    AudioService audio;
+    Service audio;
     audio.init();
 
-    { // volume
-      AudioPattern ap;
+    Sample sample; 
+    sample.load("data/sample-00.wav");
+    cout << "Using sample-00.wav" << endl; 
 
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 1.0, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.7, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.5, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.2, 523, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SILENCE), 0.0, 0, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.2, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.5, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.7, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 1.0, 523, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SILENCE), 0.0, 0, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 1.0, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.7, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.5, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.2, 523, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SILENCE), 0.0, 0, 50 );
-
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.2, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.5, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 0.7, 523, 50 );
-      ap.beep( audio.oscillator(AudioService::WF_SINE), 1.0, 523, 50 );
-
-      audio.set_pattern( 0, ap );
-    }
-
-
-    // channel, pattern
-    audio.play( 0, 0 );
+    audio.queue(sample);
 
     audio.start();
 
     sleep(10);
 
-  } catch( const AudioException &x ) {
+  } catch( const Exception &x ) {
 
     cerr << "error: (" << x.function() << ") " << x.message() << endl;
-  }
+  } 
 
-  return 0;
-
+  return 0; 
 }

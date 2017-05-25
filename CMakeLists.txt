@@ -9,9 +9,9 @@ cmake_minimum_required (VERSION 2.6)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -g -std=c++11")
 
-#find_package(PkgConfig REQUIRED)
-#pkg_search_module(SNDFILE REQUIRED sndfile)
-#include_directories(${GLFW_INCLUDE_DIRS})
+find_package(PkgConfig REQUIRED)
+pkg_search_module(SNDFILE REQUIRED sndfile)
+include_directories(${SNDFILE_INCLUDE_DIRS})
 
 #find_package (Threads REQUIRED)
 set(Boost_USE_MULTITHREADED ON)
@@ -26,16 +26,9 @@ find_package (Portaudio REQUIRED)
 set (SRC
   src/main.cc
 
-	src/audio/audio-exception.cc
-	src/audio/audio-service.cc
-	src/audio/audio-channel.cc
-	src/audio/audio-pattern.cc
-	src/audio/audio-oscillator-base.cc
-	src/audio/audio-sine-oscillator.cc
-	src/audio/audio-square-oscillator.cc
-	src/audio/audio-noise-oscillator.cc
-	src/audio/audio-saw-oscillator.cc
-	src/audio/audio-triangle-oscillator.cc
+	src/audio/exception.cc
+	src/audio/service.cc
+	src/audio/sample.cc
 )
 
 
@@ -43,6 +36,7 @@ link_libraries(
   ${PTHREAD_LIBRARY}
   ${Boost_LIBRARIES}
   ${PORTAUDIO_LIBRARIES}
+  ${SNDFILE_LIBRARIES}
 )
 
 add_executable(speech-noise ${SRC} )

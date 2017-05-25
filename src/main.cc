@@ -1,12 +1,22 @@
 #include <iostream>
 #include <unistd.h>
-#include <time.h>
-#include <stdlib.h>
+#include <ctime>
+#include <cstdlib>
+#include <csignal>
 
 #include "audio/audio.hh"
 
 using namespace std; 
 using namespace audio;
+
+static bool run_loop = true;
+
+static void sigint_handler(int signum) {
+
+  cout << "got interrupt signal, stopping" << endl;
+
+  run_loop = false;
+}
 
 void ms_sleep(int dur) {
   struct timespec ts;
@@ -41,24 +51,26 @@ int main( int arch, char** argv ) {
     cout << "We have " << samples.size() << " mini-samples" << endl;
 
     Service audio;
+
     audio.init();
-
-    int count = 500; // samples.size() - 1;
-    while(count) {
-      //audio.queue(samples[count]);
-      audio.queue(samples[rand() % samples.size()]);
-
-      count--;
-    }
-
     audio.start();
 
-    sleep(10);
+    signal(SIGINT, sigint_handler);
+    
+    while(run_loop) {
+
+      audio.queue(samples[rand() % samples.size()]);
+
+      ms_sleep(100); 
+    }
+
 
   } catch( const Exception &x ) {
 
     cerr << "error: (" << x.function() << ") " << x.message() << endl;
   } 
+
+  cout << "bye now" << endl;
 
   return 0; 
 }

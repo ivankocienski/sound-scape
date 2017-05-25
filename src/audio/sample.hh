@@ -21,6 +21,7 @@ public:
   std::list<Sample> segment(int);
 
   void soften(int);
+  bool is_loud(float) const ;
 
 private:
 

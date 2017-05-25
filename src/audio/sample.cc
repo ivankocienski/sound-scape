@@ -93,7 +93,7 @@ list<Sample> Sample::segment(int segment_len_ms) {
 
 void Sample::soften(int margin_len_ms) {
   
-  int margin_len_samples = (m_sample_rate / 1000.0) * segment_len_ms;
+  int margin_len_samples = (m_sample_rate / 1000.0) * margin_len_ms;
 
   if(margin_len_samples > m_samples.size() / 2)
     return;
@@ -112,6 +112,18 @@ void Sample::soften(int margin_len_ms) {
     back--;
     margin_len_samples--;
   }
+}
+
+bool Sample::is_loud(float threshold) const {
+
+  for(auto it : m_samples) {
+    float v = it;
+    if(v < 0) v = -v;
+
+    if(v >= threshold) return true;
+  }
+
+  return false;
 }
 
 } // namespace audio

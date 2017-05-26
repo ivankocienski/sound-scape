@@ -9,6 +9,7 @@
 
 #include "audio/audio.hh"
 #include "track.hh"
+#include "misc.hh"
 
 using namespace std; 
 using namespace audio;
@@ -22,16 +23,6 @@ static void sigint_handler(int signum) {
 
   run_loop = false;
 }
-
-void ms_sleep(int dur) {
-  struct timespec ts;
-
-  ts.tv_sec = 0;
-  ts.tv_nsec = 1000000 * dur;
-
-  nanosleep(&ts, NULL);
-}
-
 void scan_for_audio_tracks(list<Track> & tracks) {
   
   fs::path dir(fs::system_complete("data/")); 
@@ -59,7 +50,6 @@ void scan_for_audio_tracks(list<Track> & tracks) {
     track.soften();
     tracks.push_back(track);
   }
-
 }
 
 int main( int arch, char** argv ) {

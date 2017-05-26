@@ -1,4 +1,6 @@
 #include "track.hh"
+#include "misc.hh"
+
 #include <list>
 #include <cstdlib>
 
@@ -49,7 +51,8 @@ void Track::tick(Service &audio, int delta) {
 
   m_sleep = m_sleep_len;
   
-  audio.queue(m_samples[rand() % m_samples.size()]);
+  audio.queue(m_samples[rand() % m_samples.size()], frand());
+  //0.5 + 0.5 * frand());
 }
 
 

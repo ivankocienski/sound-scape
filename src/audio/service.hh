@@ -16,18 +16,23 @@ private:
   
   typedef struct playback_track_s { 
     float *sample_ptr;
+    float volume;
     int sample_remaining; 
 
     playback_track_s() { 
       sample_ptr = NULL;
       sample_remaining = 0;
+      volume = 1.0;
     }
 
-    playback_track_s(Sample & sample) {
+    playback_track_s(Sample & sample, float v) {
       Sample::sample_info_t sample_info = sample.sample_info();
 
       sample_ptr = sample_info.data;
       sample_remaining = sample_info.data_length;
+      if(v < 0) v = 0;
+      if(v > 1) v = 1;
+      volume = v;
     }
 
   } playback_track_t, *p_playback_track_t;
@@ -54,7 +59,7 @@ public:
   bool is_busy();
   void sweep_tidy();
 
-  void queue(Sample&);
+  void queue(Sample&, float);
   //void queue_pause(int);
 
   void set_volume(float);

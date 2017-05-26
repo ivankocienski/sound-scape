@@ -26,6 +26,7 @@ find_package (Portaudio REQUIRED)
 set (SRC
   src/main.cc
   src/track.cc
+  src/misc.cc
 
 	src/audio/exception.cc
 	src/audio/service.cc

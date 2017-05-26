@@ -59,7 +59,7 @@ int Service::callback( float* buffer, unsigned long buffer_size ) {
     int c = count;
 
     while(c) {
-      *dest += *src;
+      *dest += *src * it.volume;
 
       dest++;
       src++;
@@ -154,9 +154,9 @@ bool Service::paused() {
   return m_paused;
 }
 
-void Service::queue(Sample &sample) {
+void Service::queue(Sample &sample, float volume) {
 
-  m_play_tracks.push_back(playback_track_s(sample)); 
+  m_play_tracks.push_back(playback_track_s(sample, volume)); 
 }
 
 void Service::sweep_tidy() {

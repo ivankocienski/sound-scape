@@ -20,6 +20,8 @@ public:
   sample_info_t sample_info() const;
   int segment(std::list<Sample> &, int);
 
+  float peak_volume() const;
+  void normalize();
   void soften(int);
   bool is_loud(float) const ;
 

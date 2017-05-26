@@ -122,4 +122,27 @@ bool Sample::is_loud(float threshold) const {
   return false;
 }
 
+float Sample::peak_volume() const {
+  float peak = 0;
+
+  for(auto it : m_samples) {
+    float v = it;
+    if(v < 0) v = -v;
+
+    if(v > peak) peak = v;
+  }
+
+  return peak;
+
+}
+
+void Sample::normalize() {
+  float v = 1.0 / peak_volume();
+
+  for(auto & it : m_samples) {
+    it *= v;
+  }
+
+}
+
 } // namespace audio

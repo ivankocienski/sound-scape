@@ -13,14 +13,15 @@ Track::Track() {
 }
 
 void Track::load(const string &path) {
+  cout << "loading " << path << endl; 
   
   list<Sample> segments;
 
   Sample sample; 
   sample.load(path.c_str());
-  cout << "loading " << path << endl; 
+  sample.normalize();
 
-  m_sleep_len = 50 + rand() % 100;
+  m_sleep_len = 100 + rand() % 200;
 
   sample.segment(segments, m_sleep_len); 
 
@@ -49,7 +50,7 @@ void Track::tick(Service &audio, int delta) {
     return;
   }
 
-  m_sleep = m_sleep_len * 5;
+  m_sleep = m_sleep_len * (rand() % 10);
   
   audio.queue(m_samples[rand() % m_samples.size()], frand());
   //0.5 + 0.5 * frand());

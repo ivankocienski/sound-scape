@@ -38,7 +38,7 @@ bool Track::is_empty() {
 
 void Track::soften() {
   for(auto it : m_samples)
-    it.soften(20);
+    it.soften(40);
 
 }
 
@@ -49,7 +49,7 @@ void Track::tick(Service &audio, int delta) {
     return;
   }
 
-  m_sleep = m_sleep_len;
+  m_sleep = m_sleep_len * 5;
   
   audio.queue(m_samples[rand() % m_samples.size()], frand());
   //0.5 + 0.5 * frand());

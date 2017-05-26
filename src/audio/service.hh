@@ -39,10 +39,6 @@ private:
 
   std::list<playback_track_t> m_play_tracks;
 
-  //std::list<Sample *> m_sample_queue;
-  //float *m_sample_ptr;
-  //int m_sample_remaining;
-
 public:
 
   static const int c_sample_rate;
@@ -60,7 +56,6 @@ public:
   void sweep_tidy();
 
   void queue(Sample&, float);
-  //void queue_pause(int);
 
   void set_volume(float);
   float volume();

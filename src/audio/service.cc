@@ -70,32 +70,6 @@ int Service::callback( float* buffer, unsigned long buffer_size ) {
     it.sample_ptr += count;
   }
 
-/*   if(m_sample_ptr) {
- *     int count = buffer_size;
- *     if(count > m_sample_remaining) count = m_sample_remaining;
- * 
- *     // no volume control yet
- *     memcpy(buffer, m_sample_ptr, count * sizeof(float));
- * 
- *     m_sample_remaining -= count;
- *     m_sample_ptr += count;
- * 
- *     if(!m_sample_remaining) {
- *       if(m_sample_queue.size() > 0) {
- *         Sample* sample = m_sample_queue.front();
- *         m_sample_queue.pop_front();
- * 
- *         Sample::sample_info_t sample_info = sample->sample_info();
- * 
- *         m_sample_ptr       = sample_info.data;
- *         m_sample_remaining = sample_info.data_length;
- * 
- *       } else
- *         m_sample_ptr = NULL;
- *     } 
- *   }
- */
-
   return 0;
 }
 

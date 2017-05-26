@@ -22,8 +22,6 @@ bool Sample::load(const char *path) {
   SNDFILE	*sf_file;
   SF_INFO	 sf_info;
 
-  cout << "loading " << path << endl;
-
   memset(&sf_info, 0, sizeof(sf_info));
 
   sf_file = sf_open (path, SFM_READ, &sf_info);
@@ -37,9 +35,6 @@ bool Sample::load(const char *path) {
     sf_close(sf_file);
     return false;
   }
-
-  cout << "frames      : " << sf_info.frames << endl; 
-  cout << "sample-rate : " << sf_info.samplerate << endl;
 
   m_sample_rate = sf_info.samplerate;
 

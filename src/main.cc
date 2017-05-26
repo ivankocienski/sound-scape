@@ -34,12 +34,11 @@ void scan_for_audio_tracks(list<Track> & tracks) {
     if(!fs::is_regular_file(dir_itr->status())) continue;
 
     string file_name = dir_itr->path().filename().native();
-    cout << "file_name=" << file_name << endl;
 
     size_t last_dot = file_name.find_last_of(".");
     if(last_dot ==  string::npos) continue;
 
-    size_t end_wav = file_name.find(".wav", last_dot);
+    size_t end_wav = file_name.find(".flac", last_dot);
     if(end_wav ==  string::npos) continue;
 
     Track track;

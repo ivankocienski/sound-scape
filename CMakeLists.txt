@@ -25,6 +25,7 @@ find_package (Portaudio REQUIRED)
 # source files. sure, there's a better way of doing this
 set (SRC
   src/main.cc
+  src/track.cc
 
 	src/audio/exception.cc
 	src/audio/service.cc

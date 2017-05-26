@@ -8,6 +8,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "audio/audio.hh"
+#include "track.hh"
 
 using namespace std; 
 using namespace audio;
@@ -31,16 +32,7 @@ void ms_sleep(int dur) {
   nanosleep(&ts, NULL);
 }
 
-void load_audio(list<Sample> & segments, const char *path) {
-
-  Sample sample; 
-  sample.load(path);
-  cout << "loading " << path << endl; 
-
-  sample.segment(segments, 100); 
-}
-
-void scan_for_audio_samples(vector<Sample> & samples) {
+void scan_for_audio_tracks(list<Track> & tracks) {
   
   fs::path dir(fs::system_complete("data/")); 
   list<Sample> segments;
@@ -59,15 +51,15 @@ void scan_for_audio_samples(vector<Sample> & samples) {
     size_t end_wav = file_name.find(".wav", last_dot);
     if(end_wav ==  string::npos) continue;
 
-    load_audio(segments, dir_itr->path().c_str());
+    Track track;
+    track.load(dir_itr->path().c_str());
+
+    if(track.is_empty()) continue;
+
+    track.soften();
+    tracks.push_back(track);
   }
 
-  segments.remove_if( [](const Sample &sample) { return !sample.is_loud(0.1); } );
-
-  samples.assign(segments.begin(), segments.end()); 
-
-  for(auto it : samples)
-    it.soften(20);
 }
 
 int main( int arch, char** argv ) {
@@ -75,15 +67,15 @@ int main( int arch, char** argv ) {
   srand(time(NULL));
 
   try {
-    vector<Sample> samples;
-    scan_for_audio_samples(samples);
+    list<Track> tracks;
+    scan_for_audio_tracks(tracks);
 
-    if(samples.size() == 0) {
+    if(tracks.size() == 0) {
       cerr << "No samples found" << endl;
       return -1;
     }
 
-    cout << "We have " << samples.size() << " mini-samples" << endl;
+    cout << "We have " << tracks.size() << " tracks" << endl;
 
     Service audio;
 
@@ -95,9 +87,10 @@ int main( int arch, char** argv ) {
     while(run_loop) {
       audio.sweep_tidy();
 
-      audio.queue(samples[rand() % samples.size()]);
+      for(auto & it : tracks)
+        it.tick(audio, 20);
 
-      ms_sleep(100); 
+      ms_sleep(20); 
     }
 
 

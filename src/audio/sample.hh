@@ -18,7 +18,7 @@ public:
   bool load(const char *);
 
   sample_info_t sample_info() const;
-  std::list<Sample> segment(int);
+  int segment(std::list<Sample> &, int);
 
   void soften(int);
   bool is_loud(float) const ;

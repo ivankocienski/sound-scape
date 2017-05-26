@@ -47,30 +47,54 @@ int Service::callback( float* buffer, unsigned long buffer_size ) {
 
   if( m_paused ) return 0;
 
-  if(m_sample_ptr) {
+  for( auto & it : m_play_tracks ) {
+
+    if(!it.sample_remaining) continue;
+
+    float *dest = buffer;
+    float *src = it.sample_ptr;
+
     int count = buffer_size;
-    if(count > m_sample_remaining) count = m_sample_remaining;
+    if(count > it.sample_remaining) count = it.sample_remaining;
+    int c = count;
 
-    // no volume control yet
-    memcpy(buffer, m_sample_ptr, count * sizeof(float));
+    while(c) {
+      *dest += *src;
 
-    m_sample_remaining -= count;
-    m_sample_ptr += count;
+      dest++;
+      src++;
+      c--;
+    }
 
-    if(!m_sample_remaining) {
-      if(m_sample_queue.size() > 0) {
-        Sample* sample = m_sample_queue.front();
-        m_sample_queue.pop_front();
-
-        Sample::sample_info_t sample_info = sample->sample_info();
-
-        m_sample_ptr       = sample_info.data;
-        m_sample_remaining = sample_info.data_length;
-
-      } else
-        m_sample_ptr = NULL;
-    } 
+    it.sample_remaining -= count;
+    it.sample_ptr += count;
   }
+
+/*   if(m_sample_ptr) {
+ *     int count = buffer_size;
+ *     if(count > m_sample_remaining) count = m_sample_remaining;
+ * 
+ *     // no volume control yet
+ *     memcpy(buffer, m_sample_ptr, count * sizeof(float));
+ * 
+ *     m_sample_remaining -= count;
+ *     m_sample_ptr += count;
+ * 
+ *     if(!m_sample_remaining) {
+ *       if(m_sample_queue.size() > 0) {
+ *         Sample* sample = m_sample_queue.front();
+ *         m_sample_queue.pop_front();
+ * 
+ *         Sample::sample_info_t sample_info = sample->sample_info();
+ * 
+ *         m_sample_ptr       = sample_info.data;
+ *         m_sample_remaining = sample_info.data_length;
+ * 
+ *       } else
+ *         m_sample_ptr = NULL;
+ *     } 
+ *   }
+ */
 
   return 0;
 }
@@ -95,7 +119,7 @@ void Service::init() {
 
   CATCH_PA_ERROR( "Pa_OpenDefaultStream", err ); 
 
-  const PaStreamInfo *stream_info = Pa_GetStreamInfo(m_stream);
+  //const PaStreamInfo *stream_info = Pa_GetStreamInfo(m_stream);
   //if( !stream_info ) throw Exception( "Pa_GetStreamInfo", 0 );
   //int sample_rate = stream_info->sampleRate; 
 }
@@ -111,7 +135,7 @@ void Service::stop() {
 }
 
 bool Service::is_busy() { 
-  return m_sample_queue.size() > 0 || m_sample_remaining > 0;
+  return false; // FIXME
 }
 
 void Service::set_volume( float v ) {
@@ -132,17 +156,15 @@ bool Service::paused() {
 
 void Service::queue(Sample &sample) {
 
-  // we already playing a sample?
-  if(m_sample_ptr) {
+  m_play_tracks.push_back(playback_track_s(sample)); 
+}
 
-    m_sample_queue.push_back(&sample);
+void Service::sweep_tidy() {
 
-  } else { 
-    Sample::sample_info_t sample_info = sample.sample_info();
-
-    m_sample_ptr       = sample_info.data;
-    m_sample_remaining = sample_info.data_length;
-  }
+  m_play_tracks.remove_if(
+      [](const playback_track_t &track) {
+        return track.sample_remaining == 0;
+      });
 }
 
 } // namespace audio

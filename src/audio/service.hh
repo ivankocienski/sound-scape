@@ -14,10 +14,29 @@ private:
   float m_volume;
   bool  m_paused;
   
-  std::list<Sample *> m_sample_queue;
+  typedef struct playback_track_s { 
+    float *sample_ptr;
+    int sample_remaining; 
 
-  float *m_sample_ptr;
-  int m_sample_remaining;
+    playback_track_s() { 
+      sample_ptr = NULL;
+      sample_remaining = 0;
+    }
+
+    playback_track_s(Sample & sample) {
+      Sample::sample_info_t sample_info = sample.sample_info();
+
+      sample_ptr = sample_info.data;
+      sample_remaining = sample_info.data_length;
+    }
+
+  } playback_track_t, *p_playback_track_t;
+
+  std::list<playback_track_t> m_play_tracks;
+
+  //std::list<Sample *> m_sample_queue;
+  //float *m_sample_ptr;
+  //int m_sample_remaining;
 
 public:
 
@@ -33,6 +52,7 @@ public:
   void stop();
 
   bool is_busy();
+  void sweep_tidy();
 
   void queue(Sample&);
   //void queue_pause(int);

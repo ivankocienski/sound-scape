@@ -16,7 +16,7 @@ include_directories(${SNDFILE_INCLUDE_DIRS})
 #find_package (Threads REQUIRED)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_SYSTEM ON)
-find_package (Boost COMPONENTS thread system REQUIRED)
+find_package (Boost COMPONENTS thread system filesystem REQUIRED)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package (Portaudio REQUIRED)

@@ -72,9 +72,9 @@ Sample::sample_info_t Sample::sample_info() const {
   return si;
 }
 
-list<Sample> Sample::segment(int segment_len_ms) {
+int Sample::segment(list<Sample> &out, int segment_len_ms) {
 
-  list<Sample> segments;
+  int count = 0;
   int segment_len = (m_sample_rate / 1000.0) * segment_len_ms;
 
   float *buffer_ptr = m_samples.data();
@@ -82,13 +82,14 @@ list<Sample> Sample::segment(int segment_len_ms) {
 
   while(buffer_count >= segment_len) {
 
-    segments.push_back(Sample(buffer_ptr, segment_len, m_sample_rate));
+    out.push_back(Sample(buffer_ptr, segment_len, m_sample_rate));
 
     buffer_ptr   += segment_len;
     buffer_count -= segment_len;
+    count++;
   } 
 
-  return segments;
+  return count;
 }
 
 void Sample::soften(int margin_len_ms) {

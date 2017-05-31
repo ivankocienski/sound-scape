@@ -16,7 +16,12 @@ include_directories(${SNDFILE_INCLUDE_DIRS})
 #find_package (Threads REQUIRED)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_SYSTEM ON)
-find_package (Boost COMPONENTS thread system filesystem REQUIRED)
+find_package (Boost COMPONENTS 
+  thread 
+  system 
+  filesystem 
+  program_options 
+  REQUIRED)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package (Portaudio REQUIRED)
@@ -25,6 +30,7 @@ find_package (Portaudio REQUIRED)
 # source files. sure, there's a better way of doing this
 set (SRC
   src/main.cc
+  src/config.cc
   src/track.cc
   src/misc.cc
 

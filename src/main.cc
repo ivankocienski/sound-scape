@@ -8,8 +8,9 @@
 #include <boost/filesystem/path.hpp>
 
 #include "audio/audio.hh"
-#include "track.hh"
 #include "misc.hh"
+#include "track.hh"
+#include "config.hh"
 
 using namespace std; 
 using namespace audio;
@@ -23,9 +24,10 @@ static void sigint_handler(int signum) {
 
   run_loop = false;
 }
-void scan_for_audio_tracks(list<Track> & tracks) {
+
+void scan_for_audio_tracks(const string &dir_path, list<Track> & tracks) {
   
-  fs::path dir(fs::system_complete("data/")); 
+  fs::path dir(fs::system_complete(dir_path)); 
   list<Sample> segments;
 
   fs::directory_iterator end_iter;
@@ -51,13 +53,29 @@ void scan_for_audio_tracks(list<Track> & tracks) {
   }
 }
 
-int main( int arch, char** argv ) {
+int main( int argc, char** argv ) {
 
   srand(time(NULL));
 
+  config_parse_args(argc, argv);
+
+  if(config_wants_help) {
+    config_show_help();
+    return 0;
+  }
+
+  if(!config_is_valid()) {
+    cerr << "Invalid configuration provided" << endl;
+    return -1;
+  }
+
+
+
   try {
     list<Track> tracks;
-    scan_for_audio_tracks(tracks);
+
+    for( auto & it : config_data_sources ) 
+      scan_for_audio_tracks(it, tracks);
 
     if(tracks.size() == 0) {
       cerr << "No samples found" << endl;

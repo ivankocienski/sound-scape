@@ -50,7 +50,7 @@ bool Track::is_empty() {
 }
 
 void Track::soften() {
-  for(auto it : m_samples)
+  for(auto & it : m_samples)
     it.soften(config_segment_margin);
 
 }

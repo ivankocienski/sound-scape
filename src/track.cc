@@ -1,5 +1,6 @@
 #include "track.hh"
 #include "misc.hh"
+#include "config.hh"
 
 #include <list>
 #include <cstdlib>
@@ -21,7 +22,18 @@ void Track::load(const string &path) {
   sample.load(path.c_str());
   sample.normalize();
 
-  m_sleep_len = 100 + rand() % 200;
+
+  /* 
+    m_sleep_len is randomized with 5 steps around its center.
+
+    so if sleep_len = 100
+    and
+    segment_variance = 20
+
+    m_sleep_len can be one of [ 80 90 100 110 120 ] 
+   */
+
+  m_sleep_len = config_segment_length - ((2 - (rand() % 5)) * (config_segment_variance / 2));
 
   sample.segment(segments, m_sleep_len); 
 
@@ -39,7 +51,7 @@ bool Track::is_empty() {
 
 void Track::soften() {
   for(auto it : m_samples)
-    it.soften(40);
+    it.soften(config_segment_margin);
 
 }
 

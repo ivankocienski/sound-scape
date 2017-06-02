@@ -69,7 +69,10 @@ int main( int argc, char** argv ) {
     return -1;
   }
 
+  set_debug(config_debug);
 
+  if(config_debug) 
+    config_show();
 
   try {
     list<Track> tracks;

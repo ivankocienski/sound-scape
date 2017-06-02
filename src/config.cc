@@ -1,4 +1,5 @@
 #include "config.hh"
+#include "misc.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -16,8 +17,13 @@ namespace fs = boost::filesystem;
 using namespace std;
 
 // 'public' variables
-bool config_wants_help = false;
-bool config_debug = false;
+bool config_wants_help       = false;
+bool config_debug            = false;
+
+int  config_segment_length   = 100;
+int  config_segment_margin   = 40;
+int  config_segment_variance = 20;
+
 vector<string> config_data_sources;
 
 // 'private' variables
@@ -35,6 +41,9 @@ void config_parse_args(int argc, char ** argv) {
   desc.add_options()
     ("help", "show help/about")
     ("debug", "Output verbose debugging information")
+    ("segment-ms,d", po::value<int>(), "Length of segments in milliseconds") 
+    ("segment-variance-ms,a", po::value<int>(), "Vary the length of segments by at most this amount")
+    ("segment-margin-ms,m", po::value<int>(), "Length of fade in/out on a segment")
     ("source,s", po::value< vector<string> >(), "source directory");
 
   po::variables_map var_map;
@@ -46,13 +55,30 @@ void config_parse_args(int argc, char ** argv) {
     return;
   }
 
-  if (var_map.count("debug")) {
+  if (var_map.count("debug")) 
     config_debug = true;
+
+  if (var_map.count("segment-ms")) {
+    //cout << "var_map='" << var_map["segment-ms"].as<string>() << "'" << endl;
+    config_segment_length = var_map["segment-ms"].as<int>();
   }
 
-  if (var_map.count("source")) {
+  if (var_map.count("segment-variance-ms")) 
+    config_segment_variance = var_map["segment-variance-ms"].as<int>();
+  
+  if (var_map.count("segment-margin-ms")) 
+    config_segment_margin = var_map["segment-margin-ms"].as<int>();
+
+  if (var_map.count("source"))
     config_data_sources = var_map["source"].as< vector<string> >();
-  }
+}
+
+void config_show() {
+
+  debug("config.segment_length=%d", config_segment_length);
+  debug("config.segment_margin=%d", config_segment_margin);
+  debug("config.segment_variance=%d", config_segment_variance);
+
 }
 
 bool config_is_valid() {
@@ -63,6 +89,17 @@ bool config_is_valid() {
     return false;
   }
 
+  if(config_segment_length < 10) {
+    cerr << "segments must be at least 10 milliseconds long" << endl;
+    return false;
+  }
+
+  if(config_segment_margin > (config_segment_length / 2)) {
+    cerr << "segment margin must be less that half the length of segment" << endl;
+    return false;
+  }
+
+  
   for( auto & it : config_data_sources ) {
     if(fs::is_directory(fs::status(fs::path(it)))) continue;
 
